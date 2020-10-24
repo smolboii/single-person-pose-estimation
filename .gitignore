@@ -1,0 +1,3 @@
+res/train/img/*.jpg
+res/val/img/*.jpg
+__pycache__/*
