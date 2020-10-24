@@ -7,7 +7,9 @@ and Tracking](https://arxiv.org/pdf/1804.06208.pdf). The model features a ResNet
 
 ### Dataset used
 
-The dataset used for training is the [LIP dataset](http://sysu-hcp.net/lip/overview.php), which is a modification of the typical COCO dataset whereby, for the most part, each image has been cropped to contain only a single person. Hence, if one desires to train this model themselves, it is recommended to *not* use the COCO dataset, as the model does not have the means to predict poses for multiple people. The LIP dataset does not necessarily have to be used, however the dataset used should only contain images with a single person in them.
+The dataset used for training is the [LIP dataset](http://sysu-hcp.net/lip/overview.php), which is a modification of the typical COCO dataset whereby, for the most part, each image has been cropped to contain only a single person. Hence, if one desires to train this model themselves, it is recommended to use the LIP dataset, as the code has been authored to be assume that this dataset is being used. If one insists to use a different dataset, please ensure it is a single person dataset, and that you modify the code accordingly.
+
+NOTE: the dataset images have not been included in the repository as it would needlessly clog it, hence if the LIP dataset is to be used for training, the training / validation image sets need to be downloaded from https://drive.google.com/file/d/0BzvH3bSnp3E9cVl3b3pKdmFlclE/view?usp=sharing. The corresponding annotations for the LIP dataset are already included in res/.
 
 ### Training progress
 
