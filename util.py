@@ -76,14 +76,14 @@ def output_to_joints(output, img_dim, conf_thresh=0):
 
         heatmap = output[joint_i]
         max_i = torch.argmax(heatmap)
-        max_coords = (max_i // heatmap.shape[1], max_i % heatmap.shape[1])
+        max_coords = (max_i % heatmap.shape[1], max_i // heatmap.shape[1])
 
         # we ignore joints where the model's confidence is insufficient
         if heatmap[max_coords].item() >= conf_thresh:
             # convert output coords to img coords
             joint_coords = [
-                max_coords[1] * img_dim[0] / heatmap.shape[0],
-                max_coords[0] * img_dim[1] / heatmap.shape[1]
+                max_coords[0] * img_dim[1] / heatmap.shape[1],
+                max_coords[1] * img_dim[0] / heatmap.shape[0]
             ]
 
         coords_list.append(joint_coords)
