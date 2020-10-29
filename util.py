@@ -90,12 +90,56 @@ def output_to_joints(output, img_dim, conf_thresh=0):
 
     return coords_list
 
-def draw_joints(img, coords_list, colour=(255,0,0)):
-    for joint_coords in coords_list:
+def draw_joints(img, coords_list, colour=(255,0,0), draw_skeleton=False):
+    for i, joint_coords in enumerate(coords_list):
         if joint_coords != []:  # joint detected
-            cv2.ellipse(img, (joint_coords[0], joint_coords[1]), (3,3), 0, 0, 360, colour, -1)
+            dims = (3,3)
+            if i == JOINT_LABEL_DICT["B_Head"]:
+                dims = (15,15)
+            cv2.ellipse(img, (joint_coords[0], joint_coords[1]), dims, 0, 0, 360, colour, -1)
         else:  # joint not detected, so don't draw anything
             pass
+
+    line_width = 3
+    tuple_coords_list = [tuple(joint_coords) for joint_coords in coords_list]
+    if draw_skeleton:
+
+        # draw legs
+        if tuple_coords_list[JOINT_LABEL_DICT["R_Ankle"]] and tuple_coords_list[JOINT_LABEL_DICT["R_Knee"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["R_Ankle"]], tuple_coords_list[JOINT_LABEL_DICT["R_Knee"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["L_Ankle"]] and tuple_coords_list[JOINT_LABEL_DICT["L_Knee"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["L_Ankle"]], tuple_coords_list[JOINT_LABEL_DICT["L_Knee"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["R_Knee"]] and tuple_coords_list[JOINT_LABEL_DICT["R_Hip"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["R_Knee"]], tuple_coords_list[JOINT_LABEL_DICT["R_Hip"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["L_Knee"]] and tuple_coords_list[JOINT_LABEL_DICT["L_Hip"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["L_Knee"]], tuple_coords_list[JOINT_LABEL_DICT["L_Hip"]], colour, line_width)
+
+        # draw torso / head
+        if tuple_coords_list[JOINT_LABEL_DICT["L_Hip"]] and tuple_coords_list[JOINT_LABEL_DICT["B_Pelvis"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["L_Hip"]], tuple_coords_list[JOINT_LABEL_DICT["B_Pelvis"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["B_Pelvis"]] and tuple_coords_list[JOINT_LABEL_DICT["R_Hip"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["B_Pelvis"]], tuple_coords_list[JOINT_LABEL_DICT["R_Hip"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["B_Pelvis"]] and tuple_coords_list[JOINT_LABEL_DICT["B_Spine"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["B_Pelvis"]], tuple_coords_list[JOINT_LABEL_DICT["B_Spine"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["B_Spine"]] and tuple_coords_list[JOINT_LABEL_DICT["B_Neck"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["B_Spine"]], tuple_coords_list[JOINT_LABEL_DICT["B_Neck"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["B_Neck"]] and tuple_coords_list[JOINT_LABEL_DICT["B_Head"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["B_Neck"]], tuple_coords_list[JOINT_LABEL_DICT["B_Head"]], colour, line_width)
+
+        # draw arms
+        if tuple_coords_list[JOINT_LABEL_DICT["L_Shoulder"]] and tuple_coords_list[JOINT_LABEL_DICT["B_Neck"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["L_Shoulder"]], tuple_coords_list[JOINT_LABEL_DICT["B_Neck"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["B_Neck"]] and tuple_coords_list[JOINT_LABEL_DICT["R_Shoulder"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["B_Neck"]], tuple_coords_list[JOINT_LABEL_DICT["R_Shoulder"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["L_Shoulder"]] and tuple_coords_list[JOINT_LABEL_DICT["L_Elbow"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["L_Shoulder"]], tuple_coords_list[JOINT_LABEL_DICT["L_Elbow"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["L_Elbow"]] and tuple_coords_list[JOINT_LABEL_DICT["L_Wrist"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["L_Elbow"]], tuple_coords_list[JOINT_LABEL_DICT["L_Wrist"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["R_Shoulder"]] and tuple_coords_list[JOINT_LABEL_DICT["R_Elbow"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["R_Shoulder"]], tuple_coords_list[JOINT_LABEL_DICT["R_Elbow"]], colour, line_width)
+        if tuple_coords_list[JOINT_LABEL_DICT["R_Elbow"]] and tuple_coords_list[JOINT_LABEL_DICT["R_Wrist"]]:
+            cv2.line(img, tuple_coords_list[JOINT_LABEL_DICT["R_Elbow"]], tuple_coords_list[JOINT_LABEL_DICT["R_Wrist"]], colour, line_width)
+                    
 
 def generate_gt_heatmaps(gt_coords_list, img_dims, heatmap_dims):
 

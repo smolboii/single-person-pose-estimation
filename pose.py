@@ -27,8 +27,14 @@ def parse_args():
                         help="number of epochs to train for")
     parser.add_argument("-eo", "--epoch-offset", type=int,
                         help="epoch # to start counting from (simply for convenience of file naming)")
+    parser.add_argument("-gt", "--show-gt", action="store_true",
+                        help="specifies whether or not the ground-truth joint should be drawn when visualising (default false)")
     parser.add_argument("--weights-path", type=str,
                         help="path to pre-trained weights to load into model")
+    parser.add_argument("-ct", "--conf-threshold", type=float,
+                        help="confidence threshold for joint predictions (default 0)")
+    parser.add_argument("-skel", "--draw-skeleton", action="store_true",
+                        help="flag specifying whether or not the skeleton should be drawn when visualising (i.e. lines between joints)")
     return parser.parse_args()
 
 def generate_batch(annotations, ids, i, img_dir_path, batch_size=32):
@@ -48,11 +54,11 @@ def generate_batch(annotations, ids, i, img_dir_path, batch_size=32):
 
     return img_batch, inputs_batch, gt_heatmaps_batch, gt_coords_list_batch
 
-def train(n_epochs, chkpt_interval=225, val_interval=2, epoch_offset=1):
+def train(n_epochs, chkpt_interval=225, val_interval=1, epoch_offset=1):
 
     model.train()
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
     loss_fn = torch.nn.MSELoss()
 
     ids = list(train_annotations.keys())
@@ -106,7 +112,7 @@ def validate(epoch_size_factor = 0.3):
 
             val_running_loss += loss.item()
 
-    print(f'Validation mean loss (using MSELoss): {round(val_running_loss / n_batches, 5)}')
+    print(f'Validation mean loss (using MSELoss): {round(val_running_loss / n_batches, 7)}')
 
 def visualise():
 
@@ -117,11 +123,12 @@ def visualise():
     img_batch, inputs_batch, _, gt_coords_batch = generate_batch(val_annotations, list(val_annotations.keys()), rand_i, val_path + 'img/', batch_size)
 
     outputs_batch = model(inputs_batch)
-    guess_coords_batch = [util.output_to_joints(output, img_batch[i].shape) for i, output in enumerate(outputs_batch)]
+    guess_coords_batch = [util.output_to_joints(output, img_batch[i].shape, args.conf_threshold if args.conf_threshold else 0) for i, output in enumerate(outputs_batch)]
 
     for i, img in enumerate(img_batch):
-        util.draw_joints(img, gt_coords_batch[i], (255,0,0))
-        util.draw_joints(img, guess_coords_batch[i], (0,0,255))
+        if args.show_gt:
+            util.draw_joints(img, gt_coords_batch[i], (255,0,0), args.draw_skeleton)
+        util.draw_joints(img, guess_coords_batch[i], (0,0,255), args.draw_skeleton)
         cv2.imshow('test', img)
         cv2.waitKey(0)
 
