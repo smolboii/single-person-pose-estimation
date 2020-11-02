@@ -11,10 +11,6 @@ The dataset used for training is the [LIP dataset](http://sysu-hcp.net/lip/overv
 
 **NOTE**: the dataset images have not been included in the repository as it would needlessly clog it, hence if the LIP dataset is to be used for training, the training / validation image sets need to be downloaded from [here](https://drive.google.com/file/d/0BzvH3bSnp3E9cVl3b3pKdmFlclE/view?usp=sharing). Then, put the validation image set in the res/val/img folder, and the training image set in the res/train/img folder. The corresponding annotations for the LIP dataset are already included in their respective res folders.
 
-### Training progress
-
-As of right now the model has not finished training. I am training it on a lone RTX 1660 Ti GPU using CUDA through PyTorch, and have thus far only completed roughly ~20 epochs. Currently, the average MSE loss is at ~0.00029, and is steadily decreasing. I will likely train it for ~100 epochs total, and as such it is not that close to being finished. Checkpoint models will be uploaded here periodically to mark the progress of the model (in the checkpoints/ directory).
-
 ## Usage
 
 ### CLI
